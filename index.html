@@ -104,13 +104,47 @@
     text-align:center;font-family:'Poppins',sans-serif;font-size:1rem;
     color:var(--muted);margin-bottom:36px;
   }
-  /* HERO VIDEO – full width autoplay */
+  /* HERO VIDEO – facade (lite-youtube pattern) */
   .hero-video{
     position:relative;border-radius:18px;overflow:hidden;
     background:#000;box-shadow:var(--shadow-lg);
     padding-bottom:56.25%;height:0;margin-bottom:24px;
+    cursor:pointer;
   }
   .hero-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .yt-facade{
+    position:absolute;inset:0;width:100%;height:100%;
+    border:0;padding:0;margin:0;cursor:pointer;
+    background:#000;display:block;overflow:hidden;
+  }
+  .yt-facade img{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;
+  }
+  .yt-facade::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.45) 100%);
+    z-index:1;pointer-events:none;
+  }
+  .yt-play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:90px;height:64px;z-index:2;pointer-events:none;
+    transition:transform .2s ease, filter .2s ease;
+    filter:drop-shadow(0 6px 20px rgba(0,0,0,.5));
+  }
+  .yt-facade:hover .yt-play{transform:translate(-50%,-50%) scale(1.08)}
+  .yt-play svg{width:100%;height:100%;display:block}
+  .yt-label{
+    position:absolute;top:18px;left:18px;z-index:2;pointer-events:none;
+    background:rgba(255,255,255,.95);color:var(--text);
+    padding:8px 14px;border-radius:50px;
+    font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:600;
+    display:flex;align-items:center;gap:6px;
+  }
+  .yt-label::before{
+    content:"";width:18px;height:14px;background:#FF0000;border-radius:3px;
+    display:inline-block;
+  }
 
   /* LOT BAR – combined with prices + CTA */
   .lot-bar{
@@ -714,11 +748,13 @@
     <p class="hero-sub">Comune di Vallada Agordina (BL) · Frazione Andrich n.49</p>
 
     <div class="hero-video">
-      <iframe
-        src="https://www.youtube.com/embed/51d11XVfvws?autoplay=1&mute=1&loop=1&playlist=51d11XVfvws&controls=1&rel=0&modestbranding=1&playsinline=1"
-        title="Vallada Agordina – Tabià ristrutturato"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen></iframe>
+      <button type="button" class="yt-facade" data-video-id="51d11XVfvws" aria-label="Riproduci video Vallada Agordina">
+        <img src="Lotto%202/425-Aste33_immobile_Andrich%20BL_090226_drone.jpg" alt="Vallada Agordina – vista drone">
+        <span class="yt-label">YouTube</span>
+        <span class="yt-play" aria-hidden="true">
+          <svg viewBox="0 0 68 48"><path fill="#f00" d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"/><path fill="#fff" d="M45 24 27 14v20"/></svg>
+        </span>
+      </button>
     </div>
 
     <div class="lot-bar">
@@ -1116,6 +1152,21 @@
       const sel=document.getElementById('lotto');
       if(sel) sel.value=btn.dataset.lot;
     });
+  });
+
+  // YOUTUBE FACADE – carica iframe solo al click (evita anti-bot e migliora performance)
+  document.querySelectorAll('.yt-facade').forEach(facade=>{
+    facade.addEventListener('click',()=>{
+      const id=facade.dataset.videoId;
+      if(!id) return;
+      const iframe=document.createElement('iframe');
+      iframe.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+      iframe.title='Vallada Agordina – Tabià ristrutturato';
+      iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      iframe.setAttribute('allowfullscreen','');
+      iframe.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;display:block';
+      facade.parentElement.replaceChild(iframe,facade);
+    },{once:true});
   });
 
   // LIGHTBOX – Gallerie indipendenti per ogni lotto
