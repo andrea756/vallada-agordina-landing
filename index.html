@@ -548,6 +548,43 @@
   }
   .sticky-mobile .btn{flex:1;padding:13px;font-size:.9rem}
 
+  /* VIDEO MODAL */
+  .video-modal{
+    position:fixed;inset:0;z-index:200;
+    display:none;align-items:center;justify-content:center;
+    padding:50px 30px;
+  }
+  .video-modal.open{display:flex}
+  .video-modal-overlay{
+    position:absolute;inset:0;background:rgba(0,0,0,.88);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;
+  }
+  .video-modal-inner{position:relative;z-index:1;width:100%;max-width:1100px}
+  .video-modal-frame{
+    position:relative;padding-bottom:56.25%;height:0;
+    border-radius:14px;overflow:hidden;background:#000;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .video-modal-frame iframe{
+    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;
+  }
+  .video-modal-close{
+    position:absolute;top:-50px;right:0;
+    background:rgba(255,255,255,.1);color:#fff;
+    border:1.5px solid rgba(255,255,255,.25);border-radius:50%;
+    width:42px;height:42px;cursor:pointer;font-size:1.6rem;font-weight:300;
+    display:flex;align-items:center;justify-content:center;line-height:1;
+    transition:all .2s ease;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .video-modal-close:hover{background:var(--primary);border-color:var(--primary)}
+  .video-modal-fallback{
+    text-align:center;color:rgba(255,255,255,.65);font-size:.85rem;
+    margin-top:14px;font-family:'Poppins',sans-serif;
+  }
+  .video-modal-fallback a{color:#fff;text-decoration:underline}
+  .video-modal-fallback a:hover{color:var(--primary-light)}
+
   /* LIGHTBOX */
   .lightbox{
     position:fixed;inset:0;background:rgba(15,10,30,.94);
@@ -748,13 +785,13 @@
     <p class="hero-sub">Comune di Vallada Agordina (BL) · Frazione Andrich n.49</p>
 
     <div class="hero-video">
-      <a class="yt-facade" href="https://www.youtube.com/watch?v=51d11XVfvws" target="_blank" rel="noopener" aria-label="Guarda il video su YouTube – Vallada Agordina">
+      <button type="button" class="yt-facade" data-video-id="51d11XVfvws" aria-label="Riproduci video Vallada Agordina">
         <img src="Lotto%202/425-Aste33_immobile_Andrich%20BL_090226_drone.jpg" alt="Vallada Agordina – vista drone">
-        <span class="yt-label">Guarda su YouTube</span>
+        <span class="yt-label">YouTube</span>
         <span class="yt-play" aria-hidden="true">
           <svg viewBox="0 0 68 48"><path fill="#f00" d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"/><path fill="#fff" d="M45 24 27 14v20"/></svg>
         </span>
-      </a>
+      </button>
     </div>
 
     <div class="lot-bar">
@@ -1119,6 +1156,18 @@
   </div>
 </footer>
 
+<!-- VIDEO MODAL -->
+<div class="video-modal" id="videoModal" aria-hidden="true">
+  <div class="video-modal-overlay" id="videoModalOverlay"></div>
+  <div class="video-modal-inner">
+    <button class="video-modal-close" id="videoModalClose" aria-label="Chiudi video">×</button>
+    <div class="video-modal-frame" id="videoModalFrame"></div>
+    <div class="video-modal-fallback">
+      Il video non parte? <a href="https://www.youtube.com/watch?v=51d11XVfvws" target="_blank" rel="noopener">Guarda direttamente su YouTube ↗</a>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <div class="lb-counter"><span class="lb-tag" id="lbTag">Lotto</span><span id="lbCurr">1</span> / <span id="lbTotal">1</span></div>
@@ -1154,7 +1203,45 @@
     });
   });
 
-  // (Video YouTube si apre in nuova tab via target="_blank" sul link facade)
+  // VIDEO MODAL – apre iframe in popup con widget_referrer (spoof referer per evitare anti-bot)
+  const vModal=document.getElementById('videoModal');
+  const vFrame=document.getElementById('videoModalFrame');
+  function openVideoModal(videoId){
+    const iframe=document.createElement('iframe');
+    const params=new URLSearchParams({
+      rel:'0',modestbranding:'1',playsinline:'1',
+      widget_referrer:'https://landing.qualamano.com/',
+      enablejsapi:'1'
+    });
+    iframe.src='https://www.youtube-nocookie.com/embed/'+videoId+'?'+params.toString();
+    iframe.title='Vallada Agordina – Video';
+    iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    iframe.setAttribute('allowfullscreen','');
+    iframe.setAttribute('referrerpolicy','origin');
+    vFrame.innerHTML='';
+    vFrame.appendChild(iframe);
+    vModal.classList.add('open');
+    vModal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeVideoModal(){
+    vModal.classList.remove('open');
+    vModal.setAttribute('aria-hidden','true');
+    vFrame.innerHTML='';
+    document.body.style.overflow='';
+  }
+  document.querySelectorAll('.yt-facade').forEach(facade=>{
+    facade.addEventListener('click',e=>{
+      e.preventDefault();
+      const id=facade.dataset.videoId;
+      if(id) openVideoModal(id);
+    });
+  });
+  document.getElementById('videoModalClose').addEventListener('click',closeVideoModal);
+  document.getElementById('videoModalOverlay').addEventListener('click',closeVideoModal);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&vModal.classList.contains('open')) closeVideoModal();
+  });
 
   // LIGHTBOX – Gallerie indipendenti per ogni lotto
   const galleries={
