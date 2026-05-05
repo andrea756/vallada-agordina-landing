@@ -787,7 +787,7 @@
     <div class="hero-video">
       <button type="button" class="yt-facade" data-video-id="51d11XVfvws" aria-label="Riproduci video Vallada Agordina">
         <img src="Lotto%202/425-Aste33_immobile_Andrich%20BL_090226_drone.jpg" alt="Vallada Agordina – vista drone">
-        <span class="yt-label">YouTube</span>
+        <span class="yt-label">Guarda il video</span>
         <span class="yt-play" aria-hidden="true">
           <svg viewBox="0 0 68 48"><path fill="#f00" d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"/><path fill="#fff" d="M45 24 27 14v20"/></svg>
         </span>
@@ -1156,18 +1156,6 @@
   </div>
 </footer>
 
-<!-- VIDEO MODAL -->
-<div class="video-modal" id="videoModal" aria-hidden="true">
-  <div class="video-modal-overlay" id="videoModalOverlay"></div>
-  <div class="video-modal-inner">
-    <button class="video-modal-close" id="videoModalClose" aria-label="Chiudi video">×</button>
-    <div class="video-modal-frame" id="videoModalFrame"></div>
-    <div class="video-modal-fallback">
-      Il video non parte? <a href="https://www.youtube.com/watch?v=51d11XVfvws" target="_blank" rel="noopener">Guarda direttamente su YouTube ↗</a>
-    </div>
-  </div>
-</div>
-
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <div class="lb-counter"><span class="lb-tag" id="lbTag">Lotto</span><span id="lbCurr">1</span> / <span id="lbTotal">1</span></div>
@@ -1203,44 +1191,22 @@
     });
   });
 
-  // VIDEO MODAL – apre iframe in popup con widget_referrer (spoof referer per evitare anti-bot)
-  const vModal=document.getElementById('videoModal');
-  const vFrame=document.getElementById('videoModalFrame');
-  function openVideoModal(videoId){
-    const iframe=document.createElement('iframe');
-    const params=new URLSearchParams({
-      rel:'0',modestbranding:'1',playsinline:'1',
-      widget_referrer:'https://landing.qualamano.com/',
-      enablejsapi:'1'
-    });
-    iframe.src='https://www.youtube-nocookie.com/embed/'+videoId+'?'+params.toString();
-    iframe.title='Vallada Agordina – Video';
-    iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-    iframe.setAttribute('allowfullscreen','');
-    iframe.setAttribute('referrerpolicy','origin');
-    vFrame.innerHTML='';
-    vFrame.appendChild(iframe);
-    vModal.classList.add('open');
-    vModal.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-  }
-  function closeVideoModal(){
-    vModal.classList.remove('open');
-    vModal.setAttribute('aria-hidden','true');
-    vFrame.innerHTML='';
-    document.body.style.overflow='';
-  }
+  // VIDEO – self-hosted, lazy load (download solo al click)
   document.querySelectorAll('.yt-facade').forEach(facade=>{
     facade.addEventListener('click',e=>{
       e.preventDefault();
-      const id=facade.dataset.videoId;
-      if(id) openVideoModal(id);
-    });
-  });
-  document.getElementById('videoModalClose').addEventListener('click',closeVideoModal);
-  document.getElementById('videoModalOverlay').addEventListener('click',closeVideoModal);
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&vModal.classList.contains('open')) closeVideoModal();
+      const video=document.createElement('video');
+      video.src='vallada-video.mp4';
+      video.controls=true;
+      video.playsInline=true;
+      video.preload='auto';
+      video.poster=facade.querySelector('img')?.getAttribute('src')||'';
+      video.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block;background:#000;object-fit:cover';
+      const wrap=facade.parentElement;
+      wrap.replaceChild(video,facade);
+      // Tenta autoplay con audio; se il browser blocca, fallback muted
+      video.play().catch(()=>{video.muted=true;video.play().catch(()=>{});});
+    },{once:true});
   });
 
   // LIGHTBOX – Gallerie indipendenti per ogni lotto
