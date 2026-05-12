@@ -456,6 +456,12 @@
     background:#fff;border-radius:16px;padding:36px;color:var(--text);
     box-shadow:0 30px 60px rgba(0,0,0,.2);
   }
+  .form-card-zoho{padding:18px;overflow:hidden}
+  .form-card-zoho > div{width:100%;display:block}
+  .form-card-zoho iframe{
+    width:100% !important;border-radius:10px;display:block;
+    background:#fff;
+  }
   .form-card h3{margin-bottom:6px}
   .form-card .sub{color:var(--muted);font-size:.9rem;margin-bottom:22px}
   .form-row{margin-bottom:14px}
@@ -1040,54 +1046,109 @@
         </ul>
       </div>
 
-      <form class="form-card" id="leadForm" novalidate>
-        <h3>Lasciaci i tuoi dati</h3>
-        <p class="sub">Tutti i campi con * sono obbligatori.</p>
+      <div class="form-card form-card-zoho">
+        <!-- ZOHO FORM EMBED – Qualamano Vallada Agordina -->
+        <div id="zf_div_jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A"></div>
+        <script type="text/javascript">
+        (function() {
+          try {
+            var f = document.createElement("iframe");
+            var ifrmSrc = 'https://forms.zohopublic.eu/aste33/form/QualamanoValladaAgordina/formperma/jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A?zf_rszfm=1';
+            try {
+              if (typeof ZFAdvLead != "undefined" && typeof zfutm_zfAdvLead != "undefined") {
+                for (var prmIdx = 0; prmIdx < ZFAdvLead.utmPNameArr.length; prmIdx++) {
+                  var utmPm = ZFAdvLead.utmPNameArr[prmIdx];
+                  utmPm = (ZFAdvLead.isSameDomian && (ZFAdvLead.utmcustPNameArr.indexOf(utmPm) == -1)) ? "zf_" + utmPm : utmPm;
+                  var utmVal = zfutm_zfAdvLead.zfautm_gC_enc(ZFAdvLead.utmPNameArr[prmIdx]);
+                  if (typeof utmVal !== "undefined") {
+                    if (utmVal != "") {
+                      if (ifrmSrc.indexOf('?') > 0) {
+                        ifrmSrc = ifrmSrc + '&' + utmPm + '=' + utmVal;
+                      } else {
+                        ifrmSrc = ifrmSrc + '?' + utmPm + '=' + utmVal;
+                      }
+                    }
+                  }
+                }
+              }
+              if (typeof ZFLead !== "undefined" && typeof zfutm_zfLead !== "undefined") {
+                for (var prmIdx = 0; prmIdx < ZFLead.utmPNameArr.length; prmIdx++) {
+                  var utmPm = ZFLead.utmPNameArr[prmIdx];
+                  var utmVal = zfutm_zfLead.zfutm_gC_enc(ZFLead.utmPNameArr[prmIdx]);
+                  if (typeof utmVal !== "undefined") {
+                    if (utmVal != "") {
+                      if (ifrmSrc.indexOf('?') > 0) {
+                        ifrmSrc = ifrmSrc + '&' + utmPm + '=' + utmVal;
+                      } else {
+                        ifrmSrc = ifrmSrc + '?' + utmPm + '=' + utmVal;
+                      }
+                    }
+                  }
+                }
+              }
+              if (!((new RegExp("[?&]referrername=")).test(ifrmSrc))) {
+                var rfr = window.location.href;
+                try {
+                  rfr = window.self !== window.top ?
+                    window.top.location.href :
+                    (/^https?:\/\/[\w.-]+\.[a-zA-Z]{2,}/i.test(rfr) ? rfr : "");
+                } catch (e) {}
+                if (rfr && rfr !== "") {
+                  if (rfr.length > 1800) {
+                    var queryIndex = rfr.indexOf('?');
+                    if (queryIndex > -1) {
+                      rfr = rfr.substring(0, queryIndex);
+                    }
+                    if (rfr.length > 1800) {
+                      rfr = rfr.substring(0, 1800);
+                    }
+                  }
+                  ifrmSrc += ((ifrmSrc.indexOf('?') > 0) ? '&' : '?') + 'referrername=' + encodeURIComponent(rfr);
+                }
+              }
+            } catch (e) {}
 
-        <div class="form-row two">
-          <div>
-            <label for="nome">Nome *</label>
-            <input type="text" id="nome" name="nome" required>
-          </div>
-          <div>
-            <label for="cognome">Cognome *</label>
-            <input type="text" id="cognome" name="cognome" required>
-          </div>
-        </div>
+            f.src = ifrmSrc;
+            f.style.border = "none";
+            f.style.height = "570px";
+            f.style.width = "100%";
+            f.style.transition = "all 0.5s ease";
+            f.setAttribute("aria-label", 'Qualamano - Vallada Agordina');
 
-        <div class="form-row two">
-          <div>
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div>
-            <label for="telefono">Telefono *</label>
-            <input type="tel" id="telefono" name="telefono" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <label for="lotto">Lotto di interesse</label>
-          <select id="lotto" name="lotto">
-            <option value="">Seleziona...</option>
-            <option value="lotto1">Lotto 1 – Piano Terra</option>
-            <option value="lotto2">Lotto 2 – Attico</option>
-            <option value="entrambi">Entrambi</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <label for="messaggio">Messaggio</label>
-          <textarea id="messaggio" name="messaggio" placeholder="Facoltativo"></textarea>
-        </div>
-
-        <label class="checkbox">
-          <input type="checkbox" required>
-          <span>Acconsento al trattamento dei dati ai sensi del GDPR. <a href="#">Privacy</a></span>
-        </label>
-
-        <button type="submit" class="btn btn-primary">Invia richiesta</button>
-      </form>
+            var d = document.getElementById("zf_div_jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A");
+            d.appendChild(f);
+            window.addEventListener('message', function () {
+              var evntData = event.data;
+              if (evntData && evntData.constructor == String) {
+                var zf_ifrm_data = evntData.split("|");
+                if (zf_ifrm_data.length == 2 || zf_ifrm_data.length == 3) {
+                  var zf_perma = zf_ifrm_data[0];
+                  var zf_ifrm_ht_nw = (parseInt(zf_ifrm_data[1], 10) + 15) + "px";
+                  var iframe = document.getElementById("zf_div_jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A").getElementsByTagName("iframe")[0];
+                  if ((iframe.src).indexOf('formperma') > 0 && (iframe.src).indexOf(zf_perma) > 0) {
+                    var prevIframeHeight = iframe.style.height;
+                    var zf_tout = false;
+                    if (zf_ifrm_data.length == 3) {
+                      iframe.scrollIntoView();
+                      zf_tout = true;
+                    }
+                    if (prevIframeHeight != zf_ifrm_ht_nw) {
+                      if (zf_tout) {
+                        setTimeout(function () {
+                          iframe.style.height = zf_ifrm_ht_nw;
+                        }, 500);
+                      } else {
+                        iframe.style.height = zf_ifrm_ht_nw;
+                      }
+                    }
+                  }
+                }
+              }
+            }, false);
+          } catch (e) {}
+        })();
+        </script>
+      </div>
     </div>
   </div>
 </section>
@@ -1368,16 +1429,7 @@
     else if(e.key==='ArrowRight') lbNext();
   });
 
-  // Form submit
-  const form=document.getElementById('leadForm');
-  if(form){
-    form.addEventListener('submit',e=>{
-      e.preventDefault();
-      const data=Object.fromEntries(new FormData(form).entries());
-      console.log('Lead Vallada:',data);
-      form.innerHTML='<div style="text-align:center;padding:40px 20px"><div style="width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.6rem">✓</div><h3 style="margin-bottom:8px">Grazie '+(data.nome||'')+'</h3><p>Ti ricontatteremo entro 24 ore.</p></div>';
-    });
-  }
+  // (Form lead gestito da Zoho via iframe – vedi sezione #prenota)
 </script>
 
 </body>
