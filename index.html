@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<!-- COOKIEBOT – Deve essere il primissimo script nell'head (blocca i cookie pre-consenso) -->
+<script id="Cookiebot"
+  src="https://consent.cookiebot.com/uc.js"
+  data-cbid="f954f450-c1fd-4162-b5a0-8c9e80587b4f"
+  data-blockingmode="auto"
+  type="text/javascript"></script>
+
+<!-- GOOGLE TAG MANAGER – Subito dopo Cookiebot -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MV25VBDP');</script>
+<!-- End Google Tag Manager -->
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="2 appartamenti in vendita a Vallada Agordina (BL). Tabià ristrutturato sulle Dolomiti. Prenota una visita." />
@@ -739,6 +754,10 @@
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MV25VBDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- HEADER -->
 <header class="site">
@@ -1433,6 +1452,66 @@
   });
 
   // (Form lead gestito da Zoho via iframe – vedi sezione #prenota)
+
+  // ZOHO SUBMIT TRACKING – push 'submit_contact_form' al dataLayer GTM
+  (function () {
+    var FORM_PERMA  = 'jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A';
+    var ZOHO_ORIGIN = 'https://forms.zohopublic.eu';
+    var tracked = false;
+    window.addEventListener('message', function (event) {
+      if (event.origin !== ZOHO_ORIGIN) return;
+      var data = event.data;
+      if (typeof data !== 'string') return;
+      var parts = data.split('|');
+      if (parts.length !== 3) return;
+      if (parts[0].indexOf(FORM_PERMA) === -1) return;
+      if (tracked) return;
+      tracked = true;
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'submit_contact_form', form_name: 'vallada_agordina' });
+    }, false);
+  })();
+
+  // UTM POPULATOR – legge UTM dall'URL della landing e li passa all'iframe Zoho via query string
+  // NOTA: FIELD_MAP attualmente con segnaposto (identità). I nomi reali dei campi Zoho
+  // verranno comunicati da Matteo dopo la creazione dei campi nascosti nel form.
+  (function () {
+    var FIELD_MAP = {
+      utm_source:'utm_source', utm_medium:'utm_medium', utm_campaign:'utm_campaign',
+      utm_term:'utm_term', utm_content:'utm_content', referrer:'referrer'
+    };
+    var landingParams = new URLSearchParams(window.location.search);
+    var zohoParams = new URLSearchParams();
+    Object.keys(FIELD_MAP).forEach(function (key) {
+      var val = (key === 'referrer') ? document.referrer : landingParams.get(key);
+      if (val) zohoParams.append(FIELD_MAP[key], val);
+    });
+    if (zohoParams.toString() === '') return;
+
+    var container = document.getElementById('zf_div_jvFgj2QZtRPeS_B2SbJo4aR4aiBr1NFAnRY6KtrKI-A');
+    if (!container) return;
+
+    var done = false;
+    function tryInject() {
+      if (done) return;
+      var iframe = container.querySelector('iframe');
+      if (!iframe || !iframe.src) return;
+      done = true;
+      var sep = iframe.src.indexOf('?') === -1 ? '?' : '&';
+      iframe.src = iframe.src + sep + zohoParams.toString();
+    }
+
+    // L'iframe viene iniettato dallo script loader Zoho in modo asincrono → MutationObserver
+    tryInject();
+    if (!done) {
+      var observer = new MutationObserver(function () {
+        tryInject();
+        if (done) observer.disconnect();
+      });
+      observer.observe(container, { childList: true, subtree: true });
+      setTimeout(function () { observer.disconnect(); }, 10000);
+    }
+  })();
 </script>
 
 </body>
